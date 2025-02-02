@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xrcs"
+dynamic = ["version"]
+description = "An ok training app."
+authors = [
+    {name="Name", email="example@email.com"}
+]
+readme = "README.md"
+classifiers = [
+    "Topic :: Software Development :: Machine Learning Tools",
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.11",
+]
+requires-python = ">=3.11"
+
+dependencies = [
+    "pydantic~=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff==0.9.4",
+    "mypy==1.14.1",
+    "pre-commit==4.1.0",
+    "pytest~=7.0",
+    "pytest-xdist~=3.0",
+    "pytest-cov~=4.0",
+    "pytest-mock~=3.0",
+    "pylint~=3.0",
+    "pylint-pydantic",
+    "mkdocs~=1.0",
+    "mkdocstrings[python]>=0.20.0",
+    "mkdocs-material~=9.0",
+    "mkdocs-include-markdown-plugin~=6.0",
+]
+all = [
+    "xrcs[dev]",
+]
+
+[tool.setuptools_scm]

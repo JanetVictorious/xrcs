@@ -32,10 +32,14 @@ dill==0.3.9
     # via pylint
 distlib==0.3.9
     # via virtualenv
+docutils==0.21.2
+    # via kivy
 execnet==2.1.1
     # via pytest-xdist
 filelock==3.17.0
     # via virtualenv
+filetype==1.2.0
+    # via kivy
 ghp-import==2.1.0
     # via mkdocs
 griffe==1.5.6
@@ -53,6 +57,17 @@ jinja2==3.1.5
     #   mkdocs
     #   mkdocs-material
     #   mkdocstrings
+kivy==2.3.1
+    # via
+    #   kivymd
+    #   xrcs
+    #   xrcs (pyproject.toml)
+kivy-garden==0.1.5
+    # via kivy
+kivymd==1.2.0
+    # via
+    #   xrcs
+    #   xrcs (pyproject.toml)
 markdown==3.7
     # via
     #   mkdocs
@@ -111,6 +126,8 @@ paginate==0.5.7
     # via mkdocs-material
 pathspec==0.12.1
     # via mkdocs
+pillow==11.1.0
+    # via kivymd
 platformdirs==4.3.6
     # via
     #   mkdocs-get-deps
@@ -129,7 +146,9 @@ pydantic==2.10.6
 pydantic-core==2.27.2
     # via pydantic
 pygments==2.19.1
-    # via mkdocs-material
+    # via
+    #   kivy
+    #   mkdocs-material
 pylint==3.3.4
     # via
     #   pylint-plugin-utils
@@ -169,7 +188,10 @@ pyyaml-env-tag==0.1
 regex==2024.11.6
     # via mkdocs-material
 requests==2.32.3
-    # via mkdocs-material
+    # via
+    #   kivy
+    #   kivy-garden
+    #   mkdocs-material
 ruff==0.9.4
     # via xrcs
 six==1.17.0

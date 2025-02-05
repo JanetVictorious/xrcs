@@ -6,11 +6,39 @@
 #
 annotated-types==0.7.0
     # via pydantic
+certifi==2025.1.31
+    # via requests
+charset-normalizer==3.4.1
+    # via requests
+docutils==0.21.2
+    # via kivy
+filetype==1.2.0
+    # via kivy
+idna==3.10
+    # via requests
+kivy==2.3.1
+    # via
+    #   kivymd
+    #   xrcs (pyproject.toml)
+kivy-garden==0.1.5
+    # via kivy
+kivymd==1.2.0
+    # via xrcs (pyproject.toml)
+pillow==11.1.0
+    # via kivymd
 pydantic==2.10.6
     # via xrcs (pyproject.toml)
 pydantic-core==2.27.2
     # via pydantic
+pygments==2.19.1
+    # via kivy
+requests==2.32.3
+    # via
+    #   kivy
+    #   kivy-garden
 typing-extensions==4.12.2
     # via
     #   pydantic
     #   pydantic-core
+urllib3==2.3.0
+    # via requests

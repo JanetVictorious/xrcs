@@ -21,6 +21,8 @@ requires-python = ">=3.11"
 
 dependencies = [
     "pydantic~=2.0",
+    "kivy~=2.0",
+    "kivymd>=1.0",
 ]
 
 [project.optional-dependencies]
@@ -38,6 +40,9 @@ dev = [
     "mkdocstrings[python]>=0.20.0",
     "mkdocs-material~=9.0",
     "mkdocs-include-markdown-plugin~=6.0",
+]
+packaging = [
+    "buildozer",
 ]
 all = [
     "xrcs[dev]",

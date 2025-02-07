@@ -7,7 +7,7 @@ base-dir := $(shell basename $(cur-dir))
 help: ## Display this help screen
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-generate-requirements-txt: ## Generate a requirements.txt from pyproject.toml. Specify deps=<pipeline.module> for specific optional dependencies. Specify output-file=<file.txt> from specific output file.
+generate-requirements-txt: ## Generate a requirements.txt from pyproject.toml. Specify deps=<opt-deps> for specific optional dependencies. Specify output-file=<file.txt> from specific output file.
 	@if [ -z $(deps) ]; then \
 		pip-compile \
 			--output-file=requirements/requirements.txt \
@@ -40,3 +40,11 @@ ruff: ## Runs ruff linting and formatting
 	@. .venv/bin/activate && \
 	ruff check --fix && \
 	ruff format
+
+run:  ## Run application. Specify level=<level> for specific log level.
+	@. .venv/bin/activate && \
+	if [ -z $(level) ]; then \
+		python -m src.main; \
+	else \
+		KIVY_NO_ARGS=1 python -m src.main --log-level=$(level); \
+	fi

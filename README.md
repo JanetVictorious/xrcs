@@ -12,16 +12,7 @@ A minimalist, open-source training app built with Python and Kivy for tracking w
 
 ## Installation
 
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/xrcs.git
-cd xrcs
-```
-
-2. Set up a virtual environment and install dependencies:
-```bash
-make setup-venv
-```
+See the [contributing](./CONTRIBUTING.md#create-a-pull-request) guide step 1-4 on how to fork the repository and set up a working environment.
 
 ## Usage
 
@@ -53,15 +44,6 @@ Run code checks:
 ```bash
 make pre-commit
 ```
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Run pre-commit checks (`make pre-commit`)
-4. Commit your changes (`git commit -m 'Add amazing feature'`)
-5. Push to the branch (`git push origin feature/amazing-feature`)
-6. Open a Pull Request
 
 ## License
 

@@ -101,12 +101,6 @@ class WorkoutPlanningScreen(Screen):
         Logger.info('Adding exercise')
         exercise_box = BoxLayout(orientation='horizontal', size_hint_y=None, height=40, spacing=5)
         inputs = {
-            # 'name': TextInput(
-            #     multiline=False,
-            #     hint_text='Exercise Name',
-            #     size_hint_x=0.35,
-            #     write_tab=False,
-            # ),
             'name': ExerciseInput(exercise_storage=self.exercise_storage),
             'sets': TextInput(
                 multiline=False,

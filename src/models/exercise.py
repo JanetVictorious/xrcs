@@ -4,7 +4,10 @@ from pydantic import BaseModel, PositiveFloat, PositiveInt, model_validator
 
 
 class Exercise(BaseModel):
-    """Exercise model class."""
+    """Exercise model.
+
+    The model takes an exercise name, sets, reps, and weight as input.
+    """
 
     name: str
     sets: PositiveInt
@@ -13,7 +16,10 @@ class Exercise(BaseModel):
 
 
 class Workout(BaseModel):
-    """Workout model class."""
+    """Workout model.
+
+    The model takes a list of exercises, a name, and optional date, datetime, and notes as input.
+    """
 
     exercises: list[Exercise]
     name: str

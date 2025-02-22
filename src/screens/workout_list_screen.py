@@ -10,10 +10,14 @@ Builder.load_file('screens/screens.kv')
 
 
 class WorkoutListScreen(Screen):
-    """Workout list screen class."""
+    """Workout list screen.
+
+    This class is responsible for the workout list screen.
+    The screen shows a list of all workouts that the user has saved.
+    """
 
     def __init__(self, **kwargs):
-        """Initialize workout list screen."""
+        """Initialize workout list screen and load workout storage."""
         super().__init__(**kwargs)
         Logger.info('Starting workout list screen')
         self.storage = WorkoutStorage()

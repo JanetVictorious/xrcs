@@ -9,10 +9,18 @@ from .storage.storage import ProfileStorage
 
 
 class ExerciseApp(App):
-    """Exercise app class."""
+    """Exercise app class.
+
+    The class is the main application class. It is responsible for building the
+    application UI and running the application.
+    """
 
     def build(self):
-        """Build application UI."""
+        """Build application UI.
+
+        The method creates a screen manager and add all screens to it.
+        The screen manager is then returned as the root widget.
+        """
         self.storage = ProfileStorage()  # pylint: disable=attribute-defined-outside-init
         sm = ScreenManager()
 

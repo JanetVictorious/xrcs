@@ -84,10 +84,18 @@ class ExerciseInput(TextInput):
 
 
 class WorkoutPlanningScreen(Screen):
-    """Workout planning screen."""
+    """Workout planning screen.
+
+    This class is responsible for the workout planning screen.
+    The screen allows the user to create a new workout by adding exercises.
+    """
 
     def __init__(self, **kwargs):
-        """Initialize workout planning screen."""
+        """Initialize workout planning screen.
+
+        During initialization, the screen creates an instance of the exercise and workout storage
+        and initializes the list of exercise rows.
+        """
         super().__init__(**kwargs)
         Logger.info('Starting workout planning screen')
         self.exercise_storage = ExerciseStorage()
@@ -97,7 +105,10 @@ class WorkoutPlanningScreen(Screen):
         self.add_exercise_input(None)
 
     def add_exercise_input(self, instance):  # pylint: disable=unused-argument
-        """Add exercise input fields."""
+        """Add exercise input fields.
+
+        Create a new row with input fields for exercise name, sets, reps, and weight.
+        """
         Logger.info('Adding exercise')
         exercise_box = BoxLayout(orientation='horizontal', size_hint_y=None, height=40, spacing=5)
         inputs = {
@@ -141,8 +152,14 @@ class WorkoutPlanningScreen(Screen):
         self.exercise_rows.append(exercise_box)
         Logger.info(self.exercise_rows)
 
-    def remove_row(self, row):
-        """Remove row."""
+    def remove_row(self, row: BoxLayout):
+        """Remove exercise row.
+
+        Remove the given exercise row from the screen.
+
+        Args:
+            row: Exercise row to remove.
+        """
         if len(self.exercise_rows) > 1:
             Logger.info('Removing exercise row')
             self.exercise_rows.remove(row)
@@ -152,7 +169,10 @@ class WorkoutPlanningScreen(Screen):
             Logger.warning('Cannot remove last remaining exercise row')
 
     def save_workout(self, instance):  # pylint: disable=unused-argument
-        """Save workout."""
+        """Save workout.
+
+        Saves the workout with the given name and exercises to the database.
+        """
         Logger.info('Saving workout...')
 
         if not self.ids.workout_name.text:

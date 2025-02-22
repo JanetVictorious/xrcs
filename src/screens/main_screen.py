@@ -8,10 +8,13 @@ Builder.load_file('screens/screens.kv')
 
 
 class MainScreen(Screen):
-    """Main screen class."""
+    """xcrs main screen.
+
+    The class is responsible for the main screen of the application.
+    """
 
     def __init__(self, **kwargs):
-        """Initialize main screen."""
+        """Instantiate main screen and load profile data."""
         super().__init__(**kwargs)
         Logger.info('Starting main screen')
         self.storage = ProfileStorage()

@@ -62,6 +62,7 @@ class WorkoutListScreen(Screen):
 
         if not workouts:
             self.ids.workout_grid.add_widget(Label(text='No workouts found', italic=True))
+            return
 
         workouts.sort(key=lambda x: x['date'], reverse=True)
         for workout in workouts:

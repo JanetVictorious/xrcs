@@ -43,8 +43,8 @@ ruff: ## Runs ruff linting and formatting
 
 run:  ## Run application. Specify level=<level> for specific log level.
 	@. .venv/bin/activate && \
-	if [ -z $(level) ]; then \
-		python -m src.main; \
-	else \
-		KIVY_NO_ARGS=1 python -m src.main --log-level=$(level); \
-	fi
+	python -m src.main
+
+run-debug: ## Run application with debug model enabled.
+	@. .venv/bin/activate && \
+	python -m src.main -d

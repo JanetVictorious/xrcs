@@ -176,3 +176,4 @@ cython_debug/
 # Miscellaneous
 profile.json
 workouts.json
+exercises.json

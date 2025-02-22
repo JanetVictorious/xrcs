@@ -121,7 +121,9 @@
 
             Button:
                 text: "Save Workout"
-                on_press: root.save_workout(self)
+                on_press:
+                    root.save_workout(self)
+                    root.manager.transition.direction = "right"
 
 <WorkoutListScreen>:
     BoxLayout:

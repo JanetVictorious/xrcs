@@ -157,7 +157,7 @@ class WorkoutPlanningScreen(Screen):
         else:
             Logger.warning('Cannot remove last remaining exercise row')
 
-    def save_workout(self, instance):  # pylint: disable=inconsistent-return-statements,unused-argument
+    def save_workout(self, instance):  # pylint: disable=unused-argument
         """Save workout."""
         Logger.info('Saving workout...')
 
@@ -183,7 +183,7 @@ class WorkoutPlanningScreen(Screen):
             # Open the popup
             popup.open()
 
-            return None
+            return
 
         exercises = []
         for idx, row in enumerate(self.exercise_rows):
@@ -209,7 +209,7 @@ class WorkoutPlanningScreen(Screen):
 
         if not exercises:
             Logger.warning('No exercises added')
-            return None
+            return
 
         # Create workout model
         workout = Workout(

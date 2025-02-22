@@ -7,7 +7,7 @@ base-dir := $(shell basename $(cur-dir))
 help: ## Display this help screen
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-generate-requirements-txt: ## Generate a requirements.txt from pyproject.toml. Specify deps=<pipeline.module> for specific optional dependencies. Specify output-file=<file.txt> from specific output file.
+generate-requirements-txt: ## Generate a requirements.txt from pyproject.toml. Specify deps=<opt-deps> for specific optional dependencies. Specify output-file=<file.txt> from specific output file.
 	@if [ -z $(deps) ]; then \
 		pip-compile \
 			--output-file=requirements/requirements.txt \
@@ -40,3 +40,19 @@ ruff: ## Runs ruff linting and formatting
 	@. .venv/bin/activate && \
 	ruff check --fix && \
 	ruff format
+
+run: ## Run application.
+	@. .venv/bin/activate && \
+	python -m src.main
+
+run-debug: ## Run application with debug mode enabled.
+	@. .venv/bin/activate && \
+	python -m src.main -d
+
+serve-local-docs: ## Serve documentation locally
+	@. .venv/bin/activate && \
+	mkdocs serve
+
+build-docs: ## Build documentation
+	@. .venv/bin/activate && \
+	mkdocs build

@@ -1,6 +1,5 @@
 import json
 import os
-from typing import Optional
 
 from ..models.exercise import Workout
 from ..models.profile import Profile
@@ -18,7 +17,7 @@ class ProfileStorage:
         with open(self.filename, 'w', encoding='utf-8') as file_:
             json.dump(profile.model_dump(), file_)
 
-    def load_profile(self) -> Optional[Profile]:
+    def load_profile(self) -> Profile | None:
         """Load the profile data from the file."""
         if not os.path.exists(self.filename):
             return None
@@ -45,7 +44,7 @@ class ExerciseStorage:
             with open(self.filename, 'w', encoding='utf-8') as file_:
                 json.dump(exercises, file_)
 
-    def load_exercises(self) -> Optional[list]:
+    def load_exercises(self) -> list | None:
         """Load exercise data."""
         if not os.path.exists(self.filename):
             return None
@@ -68,7 +67,7 @@ class WorkoutStorage:
         with open(self.filename, 'w', encoding='utf-8') as file_:
             json.dump(workouts, file_)
 
-    def load_workouts(self) -> Optional[list[dict]]:
+    def load_workouts(self) -> list[dict] | None:
         """Load workout data."""
         if not os.path.exists(self.filename):
             return None

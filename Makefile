@@ -41,10 +41,18 @@ ruff: ## Runs ruff linting and formatting
 	ruff check --fix && \
 	ruff format
 
-run:  ## Run application. Specify level=<level> for specific log level.
+run: ## Run application.
 	@. .venv/bin/activate && \
 	python -m src.main
 
-run-debug: ## Run application with debug model enabled.
+run-debug: ## Run application with debug mode enabled.
 	@. .venv/bin/activate && \
 	python -m src.main -d
+
+serve-local-docs: ## Serve documentation locally
+	@. .venv/bin/activate && \
+	mkdocs serve
+
+build-docs: ## Build documentation
+	@. .venv/bin/activate && \
+	mkdocs build

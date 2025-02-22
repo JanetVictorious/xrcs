@@ -52,10 +52,10 @@ repos:
         types: [python]
         require_serial: true
 
-# - id: mkdocs
-#   name: mkdocs check build
-#   description: Checks if package documentation successfully builds.
-#   entry: mkdocs build
-#   language: system
-#   require_serial: true
-#   pass_filenames: false
+      - id: mkdocs
+        name: mkdocs check build
+        description: Checks if package documentation successfully builds.
+        entry: mkdocs build
+        language: system
+        require_serial: true
+        pass_filenames: false

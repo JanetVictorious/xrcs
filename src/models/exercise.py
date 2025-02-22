@@ -10,7 +10,6 @@ class Exercise(BaseModel):
     sets: PositiveInt
     reps: PositiveInt
     weight: PositiveFloat | None = None
-    notes: str | None = None
 
 
 class Workout(BaseModel):

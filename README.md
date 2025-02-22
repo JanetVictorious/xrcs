@@ -1,4 +1,4 @@
-# 🏋️‍♂️ xrcs (Exercise)
+# 🏋️ xrcs (Exercise)
 
 A minimalist, open-source training app built with Python and Kivy for tracking workouts and exercises.
 

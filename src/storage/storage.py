@@ -30,6 +30,30 @@ class ProfileStorage:
         return os.path.exists(self.filename)
 
 
+class ExerciseStorage:
+    """Storage class for saving and loading exercise data."""
+
+    def __init__(self, filename: str = 'exercises.json'):
+        """Initialize the storage class."""
+        self.filename = filename
+
+    def save_exercise(self, exercise_name: str) -> None:
+        """Save exercise data."""
+        exercises = self.load_exercises() or []
+        if exercise_name.lower() not in exercises:
+            exercises.append(exercise_name.lower())
+            with open(self.filename, 'w', encoding='utf-8') as file_:
+                json.dump(exercises, file_)
+
+    def load_exercises(self) -> Optional[list]:
+        """Load exercise data."""
+        if not os.path.exists(self.filename):
+            return None
+        with open(self.filename, encoding='utf-8') as file_:
+            data = json.load(file_)
+        return list(data)
+
+
 class WorkoutStorage:
     """Storage class for saving and loading workout data."""
 
@@ -44,10 +68,10 @@ class WorkoutStorage:
         with open(self.filename, 'w', encoding='utf-8') as file_:
             json.dump(workouts, file_)
 
-    def load_workouts(self) -> Optional[list[Workout]]:
+    def load_workouts(self) -> Optional[list[dict]]:
         """Load workout data."""
         if not os.path.exists(self.filename):
             return None
         with open(self.filename, encoding='utf-8') as file_:
             data = json.load(file_)
-            return [Workout(**w) for w in data]
+        return data

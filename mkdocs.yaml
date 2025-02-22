@@ -1,0 +1,85 @@
+---
+site_name: xrcs
+site_description: Training app
+site_url: https://janetvictorious.github.io/xrcs.github.io/
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/lightbulb
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to light mode
+  features:
+    - content.tabs.link
+    - content.code.annotate
+    - content.code.copy
+    - announce.dismiss
+    - navigation.tabs
+
+repo_name: 🏋️ xrcs
+repo_url: https://github.com/JanetVictorious/xrcs
+
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+
+nav:
+  - Getting Started:
+      - Welcome to 🏋️ xrcs: source/index.md
+      - Contributing: source/contributing.md
+  - API Documentation:
+      - 🏋️ xrcs:
+          - App: source/api/app.md
+          - Screens: source/api/screens.md
+          - Models: source/api/models.md
+          - Storage: source/api/storage.md
+
+markdown_extensions:
+  - tables
+  - toc:
+      permalink: true
+      title: Page contents
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.extra
+  - pymdownx.tabbed:
+      alternate_style: true
+
+plugins:
+  - search
+  - include-markdown
+  - mkdocstrings:
+      default_handlers: python
+      handlers:
+        python:
+          options:
+            members_order: source
+            heading_level: 3
+            separate_signature: true
+            filters: ["!^_"]
+            docstring_options:
+              ignore_init_summary: true
+            merge_init_into_class: true
+            show_signature_annotations: true
+            signature_crossrefs: true

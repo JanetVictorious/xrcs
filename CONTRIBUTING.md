@@ -1,4 +1,4 @@
-# Contribute to xrcs
+# Contribute to 🏋️‍♂️ xrcs
 
 Everyone is welcome to contribute, and we value everybody's contribution. Code
 contributions are not the only way to help the community. Answering questions, helping
@@ -8,7 +8,7 @@ others, and improving the documentation are also immensely valuable.
 
 ## Ways to contribute
 
-There are several ways you can contribute to xrcs:
+There are several ways you can contribute to 🏋️‍♂️ xrcs:
 
 * Fix outstanding issues with the existing code.
 * Submit issues related to bugs or desired new features.
@@ -25,13 +25,13 @@ Do your best to follow these guidelines when submitting a bug-related issue or a
 
 ### Did you find a bug?
 
-The xrcs app aims to be robust and reliable.
+The 🏋️‍♂️ xrcs app aims to be robust and reliable.
 
 Before you report an issue, we would really appreciate it if you could **make sure the bug was not already reported** (use the search bar on GitHub under Issues).
 
 ### Do you want a new feature?
 
-If there is a new feature you'd like to see in xrcs, please open an issue and describe:
+If there is a new feature you'd like to see in 🏋️‍♂️ xrcs, please open an issue and describe:
 
 1. What is the *motivation* behind this feature? Is it related to a problem or frustration with the app? Is it something you worked on and think it could benefit the community and the users?
 
@@ -52,20 +52,20 @@ For more details about how to generate, build, and write the documentation, take
 
 Before writing any code, we strongly advise you to search through the existing PRs or issues to make sure nobody is already working on the same thing. If you are unsure, it is always a good idea to open an issue to get some feedback.
 
-You will need basic `git` proficiency to contribute to xrcs. While `git` is not the easiest tool to use, it has the greatest manual. Type `git --help` in a shell and enjoy! If you prefer books, [Pro Git](https://git-scm.com/book/en/v2) is a very good reference.
+You will need basic `git` proficiency to contribute to 🏋️‍♂️ xrcs. While `git` is not the easiest tool to use, it has the greatest manual. Type `git --help` in a shell and enjoy! If you prefer books, [Pro Git](https://git-scm.com/book/en/v2) is a very good reference.
 
-You'll need **Python 3.11** to contribute to xrcs. Follow the steps below to start contributing:
+You'll need **Python 3.11** to contribute to 🏋️‍♂️ xrcs. Follow the steps below to start contributing:
 
-1. Fork the [repository](https://github.com/JanetVictorious/xrcs) by
-   clicking on the **[Fork](https://github.com/JanetVictorious/xrcs/fork)** button on the repository's page. This creates a copy of the code
+1. Fork the [repository](https://github.com/JanetVictorious/🏋️‍♂️ xrcs) by
+   clicking on the **[Fork](https://github.com/JanetVictorious/🏋️‍♂️ xrcs/fork)** button on the repository's page. This creates a copy of the code
    under your GitHub user account.
 
 2. Clone your fork to your local disk, and add the base repository as a remote:
 
    ```bash
-   git clone git@github.com:<your Github handle>/xrcs.git
-   cd xrcs
-   git remote add upstream https://github.com/JanetVictorious/xrcs.git
+   git clone git@github.com:<your Github handle>/🏋️‍♂️ xrcs.git
+   cd 🏋️‍♂️ xrcs
+   git remote add upstream https://github.com/JanetVictorious/🏋️‍♂️ xrcs.git
    ```
 
 
@@ -83,7 +83,7 @@ You'll need **Python 3.11** to contribute to xrcs. Follow the steps below to sta
    make setup-venv
    ```
 
-   If xrcs was already installed in the virtual environment, remove
+   If 🏋️‍♂️ xrcs was already installed in the virtual environment, remove
    it with `rm -rf .venv` before reinstalling.
 
 5. Develop the features in your branch.
@@ -101,7 +101,7 @@ You'll need **Python 3.11** to contribute to xrcs. Follow the steps below to sta
    make run-test-cov
    ```
 
-   xrcs relies on `black`, `ruff`, `pylint`, and `pre-commit` to format and lint its source code
+   🏋️‍♂️ xrcs relies on `black`, `ruff`, `pylint`, and `pre-commit` to format and lint its source code
    consistently.
 
    To install the development hooks, run:
@@ -185,4 +185,4 @@ pytest -n auto ./tests/path/to/my/testfile.py
 
 ### Style guide
 
-For documentation strings, xrcs follows the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html).
+For documentation strings, 🏋️‍♂️ xrcs follows the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html).

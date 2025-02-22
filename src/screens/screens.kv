@@ -1,0 +1,153 @@
+#:kivy 1.2.0
+
+<ProfileScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: 10
+        spacing: 10
+
+        Label:
+            text: "Create your profile"
+
+        TextInput:
+            id: name_input
+            multiline: False
+            hint_text: "Enter your name"
+
+        TextInput:
+            id: age_input
+            multiline: False
+            hint_text: "Enter your age"
+
+        TextInput:
+            id: weight_input
+            multiline: False
+            hint_text: "Enter your weight (kg)"
+
+        Button:
+            text: "Save profile"
+            on_press: root.save_profile(self)
+
+<MainScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: 10
+
+        Label:
+            id: welcome_label
+
+        Button:
+            text: "Create workout"
+            size_hint_y: None
+            height: 30
+            on_press:
+                root.manager.current = "workout_planning"
+                root.manager.transition.direction = "left"
+
+        Button:
+            text: "List workouts"
+            size_hint_y: None
+            height: 30
+            on_press:
+                root.manager.current = "workout_list"
+                root.manager.transition.direction = "left"
+
+<WorkoutPlanningScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: 10
+        spacing: 10
+
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: 50
+
+            Label:
+                text: "Workout name:"
+                size_hint_x: 0.3
+
+            TextInput:
+                id: workout_name
+                multiline: False
+                hint_text: "Enter a workout name"
+                size_hint_x: 0.7
+
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: 50
+
+            Label:
+                text: "Name:"
+                size_hint_x: 0.35
+
+            Label:
+                text: "Sets:"
+                size_hint_x: 0.15
+
+            Label:
+                text: "Reps:"
+                size_hint_x: 0.15
+
+            Label:
+                text: "Weight:"
+                size_hint_x: 0.15
+
+            Label:
+                text: ""
+                size_hint_x: 0.1
+
+        BoxLayout:
+            id: exercise_layout
+            orientation: "vertical"
+            spacing: 5
+
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: 30
+            spacing: 10
+
+            Button:
+                text: "<<"
+                on_press:
+                    root.manager.current = "main"
+                    root.manager.transition.direction = "right"
+
+            Button:
+                text: "Add Exercise Row"
+                on_press: root.add_exercise_input(self)
+
+            Button:
+                text: "Save Workout"
+                on_press: root.save_workout(self)
+
+<WorkoutListScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: 10
+        spacing: 10
+
+        Label:
+            text: "Workouts"
+            size_hint_y: None
+            height: 50
+            bold: True
+
+        ScrollView:
+            GridLayout:
+                id: workout_grid
+                cols: 1
+                padding: 10
+                spacing: 10
+                size_hint_y: None
+                minimum_height: self.height
+
+        Button:
+            text: "<<"
+            size_hint_y: None
+            height: 30
+            on_press:
+                root.manager.current = "main"
+                root.manager.transition.direction = "right"

@@ -28,16 +28,58 @@ class ProfileScreen(Screen):
         The method is called when the user clicks the save button on the profile screen.
         Once the profile is saved, the user is moved to the main screen.
         """
-        profile = Profile(
-            name=self.ids.name_input.text,
-            age=int(self.ids.age_input.text),
-            weight=float(self.ids.weight_input.text),
+        try:
+            # Validate inputs
+            if not self.ids.name_input.text:
+                self._show_error_popup('Name is required')
+                return
+
+            if not self.ids.dob_input.text:
+                self._show_error_popup('Date of birth is required')
+                return
+
+            if not self.ids.weight_input.text:
+                self._show_error_popup('Weight is required')
+                return
+
+            # Create profile
+            profile = Profile(
+                name=self.ids.name_input.text,
+                dob=self.ids.dob_input.text,
+                weight=float(self.ids.weight_input.text),
+            )
+
+            Logger.info('Instantiated profile: %s', profile.model_dump())
+
+            # Save new profile
+            self.storage.save_profile(profile)
+
+            # Move to main screen
+            self.manager.current = 'main'
+
+        except ValueError as e:
+            self._show_error_popup(f'Invalid input: {str(e)}')
+
+    def _show_error_popup(self, message):
+        """Show error popup with the given message."""
+        from kivy.uix.button import Button
+        from kivy.uix.popup import Popup
+
+        # Create content and add to the popup
+        content = Button(
+            text='Close',
+            size_hint_y=0.1,
+        )
+        popup = Popup(
+            title=message,
+            content=content,
+            auto_dismiss=False,
+            size_hint=(None, None),
+            size=(400, 200),
         )
 
-        Logger.info('Instatiated profile : %s', profile.model_dump())
+        # Bind the on_press event of the button to the dismiss function
+        content.bind(on_press=popup.dismiss)  # pylint: disable=no-member
 
-        # Save new profile
-        self.storage.save_profile(profile)
-
-        # Move to main screen
-        self.manager.current = 'main'
+        # Open the popup
+        popup.open()

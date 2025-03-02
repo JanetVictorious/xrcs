@@ -72,3 +72,7 @@ class WorkoutListScreen(Screen):
         for workout in workouts:
             Logger.info('Workout')
             self.ids.workout_grid.add_widget(self.create_workout_item(workout))
+
+    def on_enter(self):  # pylint: disable=arguments-differ
+        """Refresh workouts when screen is entered."""
+        self.refresh_workouts()

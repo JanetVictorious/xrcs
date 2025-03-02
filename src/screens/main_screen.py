@@ -22,4 +22,4 @@ class MainScreen(Screen):
         # Load profile data
         profile_data = self.storage.load_profile()
         if profile_data:
-            self.ids.welcome_label.text = f'Welcome {profile_data["name"]}!'
+            self.ids.welcome_label.text = f'Welcome {profile_data.name}!'

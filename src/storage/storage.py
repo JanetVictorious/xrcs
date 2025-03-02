@@ -34,7 +34,8 @@ class ProfileStorage:
         if not os.path.exists(self.filename):
             return None
         with open(self.filename, encoding='utf-8') as file_:
-            return json.load(file_)
+            data = json.load(file_)
+            return Profile(**data)
 
     def profile_exists(self) -> bool:
         """Check if the profile file exists.

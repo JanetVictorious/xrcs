@@ -15,9 +15,9 @@
             hint_text: "Enter your name"
 
         TextInput:
-            id: age_input
+            id: dob_input
             multiline: False
-            hint_text: "Enter your age"
+            hint_text: "Enter your date of birth (YYYY-MM-DD)"
 
         TextInput:
             id: weight_input
@@ -131,11 +131,24 @@
         padding: 10
         spacing: 10
 
-        Label:
-            text: "Workouts"
+        BoxLayout:
+            orientation: "horizontal"
             size_hint_y: None
             height: 50
-            bold: True
+
+            Label:
+                text: "Workouts"
+                size_hint_y: None
+                height: 50
+                bold: True
+                size_hint_x: 0.8
+
+            Button:
+                text: "Refresh"
+                size_hint_y: None
+                height: 50
+                size_hint_x: 0.2
+                on_press: root.refresh_workouts()
 
         ScrollView:
             GridLayout:

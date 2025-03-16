@@ -25,62 +25,67 @@ class ExerciseInput(TextInput):
             **kwargs,
         )
         self.exercise_storage = exercise_storage
-        # self.dropdown = None
-        # self.bind(focus=self._on_focus)
-        # self.bind(text=self._on_text)
+        self.dropdown = None
+        # Only bind to text changes, not focus
+        self.bind(text=self._on_text)  # pylint: disable=no-member
 
-    # def _create_dropdown(self):
-    #     """Create new dropdown instance."""
-    #     if self.dropdown:
-    #         self.dropdown.dismiss()
-    #     else:
-    #         self.dropdown = DropDown()
+    def _create_dropdown(self):
+        """Create new dropdown instance."""
+        from kivy.uix.dropdown import DropDown
 
-    # def _update_dropdown(self, text: str = ''):
-    #     """Update dropdown suggestions."""
-    #     self._create_dropdown()
-    #     exercises = self.exercise_storage.load_exercises() or []
-    #     filtered = [ex for ex in exercises if text.lower() in ex.lower()]
+        if self.dropdown:
+            self.dropdown.dismiss()
+        self.dropdown = DropDown()
 
-    #     # Create button for each filtered exercise
-    #     for exercise in filtered:
-    #         btn = Button(
-    #             text=exercise,
-    #             size_hint_y=None,
-    #             height=30,
-    #         )
+    def _update_dropdown(self, text: str = ''):
+        """Update dropdown suggestions."""
+        # Don't create dropdown for empty text
+        if not text:
+            if self.dropdown:
+                self.dropdown.dismiss()
+                self.dropdown = None
+            return
 
-    #         btn.bind(on_release=lambda btn: self.dropdown.select(btn.text))
-    #         self.dropdown.add_widget(btn)
+        self._create_dropdown()
+        exercises = self.exercise_storage.load_exercises() or []
 
-    # def _on_focus(self, instance, value):
-    #     """Handle focus event."""
-    #     if value:
-    #         self._update_dropdown(self.text)
-    #         if self.dropdown:
-    #             self.dropdown.open(self)
-    #     else:
-    #         if self.dropdown:
-    #             self.dropdown.dismiss()
+        # If no exercises, don't show dropdown
+        if not exercises:
+            return
 
-    # def _on_text(self, instance, value):
-    #     """Handle text change event."""
-    #     self._update_dropdown(value)
-    #     if self.focus and self.dropdown and self.dropdown.children:
-    #         self.dropdown.open(self)
+        filtered = [ex for ex in exercises if text.lower() in ex.lower()]
 
-    # def _select_exercise(self, exercise):
-    #     """Select exercise from dropdown."""
-    #     self.text = exercise
-    #     if self.dropdown:
-    #         self.dropdown.dismiss()
+        # If no matches, don't show dropdown
+        if not filtered:
+            return
 
-    # def keyboard_on_key_down(self, window, keycode, text, modifiers):
-    #     """Handle keyboard input."""
-    #     if keycode[1] == 'enter':
-    #         self.dropdown.dismiss()
-    #         return True
-    #     return super().keyboard_on_key_down(window, keycode, text, modifiers)
+        # Create button for each filtered exercise
+        for exercise in filtered[:5]:  # Limit to 5 suggestions
+            btn = Button(
+                text=exercise,
+                size_hint_y=None,
+                height=30,
+            )
+            # Fix the lambda to capture the current value
+            btn.bind(on_release=lambda btn, ex=exercise: self._select_exercise(ex))  # pylint: disable=no-member
+            self.dropdown.add_widget(btn)  # type: ignore
+
+    def _on_text(self, instance, value):  # pylint: disable=unused-argument
+        """Handle text change event."""
+        # Only update dropdown when we have text
+        if value and self.focus:
+            self._update_dropdown(value)
+            if self.dropdown and self.dropdown.children:
+                self.dropdown.open(self)
+        elif self.dropdown:
+            self.dropdown.dismiss()
+
+    def _select_exercise(self, exercise):
+        """Select exercise from dropdown."""
+        self.text = exercise
+        if self.dropdown:
+            self.dropdown.dismiss()
+            self.dropdown = None
 
 
 class WorkoutPlanningScreen(Screen):
@@ -175,39 +180,28 @@ class WorkoutPlanningScreen(Screen):
         """
         Logger.info('Saving workout...')
 
+        # Validate workout name
         if not self.ids.workout_name.text:
-            Logger.error('Missing workout name')
-
-            # Create content and add to the popup
-            content = Button(
-                text='Close',
-                size_hint_y=0.1,
-            )
-            popup = Popup(
-                title='Workout name is required',
-                content=content,
-                auto_dismiss=False,
-                size_hint=(None, None),
-                size=(400, 400),
-            )
-
-            # Bind the on_press event of the button to the dismiss function
-            content.bind(on_press=popup.dismiss)  # pylint: disable=no-member
-
-            # Open the popup
-            popup.open()
-
+            self._show_error_popup('Workout name is required')
             return
 
+        # Validate exercises
         exercises = []
+        invalid_rows = []
+
         for idx, row in enumerate(self.exercise_rows):
             try:
                 inp_row = {
                     'name': row.children[4].text,
                     'sets': int(row.children[3].text),
                     'reps': int(row.children[2].text),
-                    'weight': float(row.children[1].text),
+                    'weight': float(row.children[1].text) if row.children[1].text else None,
                 }
+
+                # Skip rows with empty name
+                if not inp_row['name']:
+                    continue
+
                 Logger.info('Exercise %d: %s', idx, inp_row)
 
                 # Create exercise with validated input
@@ -220,9 +214,14 @@ class WorkoutPlanningScreen(Screen):
 
             except (ValueError, IndexError) as e:
                 Logger.error('Invalid input for row %s: %s', idx + 1, e)
+                invalid_rows.append(idx + 1)
+
+        if invalid_rows:
+            self._show_error_popup(f'Invalid input in rows: {", ".join(map(str, invalid_rows))}')
+            return
 
         if not exercises:
-            Logger.warning('No exercises added')
+            self._show_error_popup('No valid exercises added')
             return
 
         # Create workout model
@@ -239,6 +238,27 @@ class WorkoutPlanningScreen(Screen):
 
         # Return to main screen
         self.manager.current = 'main'
+
+    def _show_error_popup(self, message):
+        """Show error popup with the given message."""
+        # Create content and add to the popup
+        content = Button(
+            text='Close',
+            size_hint_y=0.1,
+        )
+        popup = Popup(
+            title=message,
+            content=content,
+            auto_dismiss=False,
+            size_hint=(None, None),
+            size=(400, 400),
+        )
+
+        # Bind the on_press event of the button to the dismiss function
+        content.bind(on_press=popup.dismiss)  # pylint: disable=no-member
+
+        # Open the popup
+        popup.open()
 
     def clear_inputs(self):
         """Clear all inputs after saving."""

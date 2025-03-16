@@ -28,6 +28,13 @@ class Workout(BaseModel):
     notes: str | None = None
 
     @model_validator(mode='after')
+    def no_empty_exercises(self) -> 'Workout':
+        """Check that exercises are not empty."""
+        if not self.exercises:
+            raise ValueError('Exercises cannot be empty')
+        return self
+
+    @model_validator(mode='after')
     def set_dates(self) -> 'Workout':
         """Set date and datetime fields."""
         self.date = date.today().isoformat()

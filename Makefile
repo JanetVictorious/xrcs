@@ -55,8 +55,7 @@ run-tests: ## Run tests
 
 run-tests-cov: ## Run tests with coverage reporting
 	@. .venv/bin/activate && \
-	pytest -n auto --cov=src tests && \
-	python -m coverage report
+	pytest -n auto --cov=src tests
 
 serve-local-docs: ## Serve documentation locally
 	@. .venv/bin/activate && \

@@ -1,0 +1,145 @@
+---
+name: CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "The version to tag, without the leading 'v'. If omitted, will use the version from setuptools-scm."
+        type: string
+        required: false
+      sha:
+        description: "The full sha of the commit to be released. If omitted, the latest commit on the default branch will be used."
+        default: ""
+        type: string
+        required: false
+  push:
+    branches: [main]
+    tags:
+      - 'v*'  # Run workflow on version tags
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  determine-version:
+    name: "Determine Version"
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+      is_release: ${{ steps.check-tag.outputs.is_release }}
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required for setuptools-scm to work correctly
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: "Install dependencies"
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools setuptools-scm
+
+      - name: "Get version from setuptools-scm"
+        id: get-version
+        run: |
+          if [ -n "${{ github.event.inputs.tag }}" ]; then
+            # Use manually provided tag if available
+            echo "version=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
+          else
+            # Get version from setuptools-scm
+            VERSION=$(python -c "from setuptools_scm import get_version; print(get_version())")
+            echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: "Check if this is a release"
+        id: check-tag
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            echo "is_release=true" >> $GITHUB_OUTPUT
+          elif [ -n "${{ github.event.inputs.tag }}" ]; then
+            echo "is_release=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_release=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: "Display determined version"
+        run: |
+          echo "::notice title=Version::Determined version is ${{ steps.get-version.outputs.version }}"
+          echo "::group::Version Details"
+          echo "Version: ${{ steps.get-version.outputs.version }}"
+          echo "Is Release: ${{ steps.check-tag.outputs.is_release }}"
+          echo "Ref: ${{ github.ref }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "::endgroup::"
+
+  tag-release:
+    name: "Tag release"
+    runs-on: ubuntu-latest
+    needs: determine-version
+    if: ${{ github.ref == 'refs/heads/main' && github.event.inputs.tag != '' }}
+    permissions:
+      contents: write
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.sha || github.sha }}
+
+      - name: "Create and push tag"
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git tag -a "v${{ needs.determine-version.outputs.version }}" -m "Release v${{ needs.determine-version.outputs.version }}"
+          git push origin "v${{ needs.determine-version.outputs.version }}"
+
+  build-and-publish:
+    name: "Build and publish"
+    runs-on: ubuntu-latest
+    needs: [determine-version, tag-release]
+    if: ${{ needs.determine-version.outputs.is_release == 'true' || github.event_name == 'workflow_dispatch' }}
+    permissions:
+      contents: read
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: "Display version being built"
+        run: |
+          echo "::notice title=Building::Building version ${{ needs.determine-version.outputs.version }}"
+
+      - name: "Install build dependencies"
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+
+      - name: "Build package"
+        run: |
+          python -m build
+
+      - name: "Store the distribution packages"
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+          retention-days: 7
+
+      # Uncomment when ready to publish to PyPI
+      # - name: "Publish to PyPI"
+      #   if: ${{ needs.determine-version.outputs.is_release == 'true' }}
+      #   uses: pypa/gh-action-pypi-publish@release/v1
+      #   with:
+      #     password: ${{ secrets.PYPI_API_TOKEN }}

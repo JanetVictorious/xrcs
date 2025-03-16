@@ -49,6 +49,10 @@ run-debug: ## Run application with debug mode enabled.
 	@. .venv/bin/activate && \
 	python -m src.main -d
 
+run-tests: ## Run tests
+	@. .venv/bin/activate && \
+	pytest -n auto tests
+
 serve-local-docs: ## Serve documentation locally
 	@. .venv/bin/activate && \
 	mkdocs serve

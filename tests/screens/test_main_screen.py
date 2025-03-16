@@ -10,11 +10,6 @@ with patch('kivy.lang.builder.Builder.load_file'):
     from src.screens.main_screen import MainScreen
 from src.models.profile import Profile
 
-# @pytest.fixture
-# def tmp_path(tmp_path):
-#     """Temporary path fixture."""
-#     return tmp_path
-
 
 @pytest.fixture
 def screen_manager():
@@ -39,20 +34,6 @@ def main_screen():
         screen.ids['welcome_label'] = Label()
 
         return screen
-
-
-@pytest.fixture
-def mock_profile_storage():
-    """Mock profile storage fixture."""
-    profile = Profile(name='Test User', dob='1990-01-01', weight=70)
-    with patch('src.screens.main_screen.ProfileStorage') as mock:
-        # Create a mock instance that will be returned when ProfileStorage() is called
-        storage = Mock()
-        # Set up the mock to return our profile when load_profile is called
-        storage.load_profile.return_value = profile
-        # Make the ProfileStorage constructor return our mock
-        mock.return_value = storage
-        yield storage
 
 
 def test_default_widgets():

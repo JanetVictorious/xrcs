@@ -42,7 +42,7 @@ def workout_storage(tmp_path):
 
 def test_profile_storage_save(tmp_path, profile_storage):
     """Test ProfileStorage save method."""
-    test_profile = Profile(name='Test User', age=25, weight=70)
+    test_profile = Profile(name='Test User', dob='1990-01-01', weight=70)
     with patch('builtins.open', mock_open()) as mock_file:
         profile_storage.save_profile(profile=test_profile)
         mock_file.assert_called_once_with(str(tmp_path / 'test_profile.json'), 'w', encoding='utf-8')
@@ -55,17 +55,17 @@ def test_profile_storage_load_nonexistent(profile_storage):
 
 def test_profile_storage_load(profile_storage):
     """Test ProfileStorage load method when file exists."""
-    test_profile = Profile(name='Test User', age=25, weight=70)
+    test_profile = Profile(name='Test User', dob='1990-01-01', weight=70)
     profile_storage.save_profile(profile=test_profile)
     loaded_profile = profile_storage.load_profile()
-    assert loaded_profile['name'] == test_profile.name
-    assert loaded_profile['age'] == test_profile.age
-    assert loaded_profile['weight'] == test_profile.weight
+    assert loaded_profile.name == test_profile.name
+    assert loaded_profile.dob == test_profile.dob
+    assert loaded_profile.weight == test_profile.weight
 
 
 def test_profile_storage_exists(profile_storage):
     """Test ProfileStorage profile_exists method."""
-    test_profile = Profile(name='Test User', age=25, weight=70)
+    test_profile = Profile(name='Test User', dob='1990-01-01', weight=70)
     profile_storage.save_profile(profile=test_profile)
     assert profile_storage.profile_exists()
 

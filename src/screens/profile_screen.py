@@ -1,5 +1,7 @@
 from kivy.lang.builder import Builder
 from kivy.logger import Logger
+from kivy.uix.button import Button
+from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
 
 from ..models.profile import Profile
@@ -62,9 +64,6 @@ class ProfileScreen(Screen):
 
     def _show_error_popup(self, message):
         """Show error popup with the given message."""
-        from kivy.uix.button import Button
-        from kivy.uix.popup import Popup
-
         # Create content and add to the popup
         content = Button(
             text='Close',

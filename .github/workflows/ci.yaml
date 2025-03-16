@@ -130,4 +130,4 @@ jobs:
           pip install safety
       - name: "Check dependencies for vulnerabilities"
         run: |
-          safety scan -r requirements/requirements-all.txt --output text
+          safety scan -r requirements/requirements-all.txt --output screen

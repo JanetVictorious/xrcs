@@ -114,34 +114,6 @@ jobs:
           fi
           echo "::endgroup::"
 
-      - name: "Get detailed setuptools-scm info"
-        run: |
-          echo "::group::Setuptools-SCM Version Details"
-          python - <<EOF
-          from setuptools_scm import get_version
-          import json
-
-          # Get the simple version string
-          version = get_version()
-          print(f"Version: {version}")
-
-          # Try to access detailed info (note: _get_version is internal and might change)
-          try:
-              from setuptools_scm import _get_version
-              version_data = _get_version()
-              print(f"Tag: {version_data.get('tag', 'No tag')}")
-              print(f"Distance: {version_data.get('distance', 'N/A')}")
-              print(f"Dirty: {version_data.get('dirty', False)}")
-              print(f"Node: {version_data.get('node', 'N/A')}")
-
-              # Print the raw data
-              print("\nRaw version data:")
-              print(json.dumps(version_data, indent=2))
-          except (ImportError, AttributeError):
-              print("Could not access detailed version info")
-          EOF
-          echo "::endgroup::"
-
       - name: "Get version from setuptools-scm"
         id: get-version
         run: |

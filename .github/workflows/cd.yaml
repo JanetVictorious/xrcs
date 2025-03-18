@@ -17,7 +17,6 @@ on:
     branches: [main]
     tags:
       - 'v*'  # Run workflow on version tags
-  pull_request:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -30,6 +29,9 @@ jobs:
     outputs:
       version: ${{ steps.get-version.outputs.version }}
       is_release: ${{ steps.check-tag.outputs.is_release }}
+      should_tag: ${{ steps.check-tag.outputs.should_tag }}
+      current_tag: ${{ steps.get-current-tag.outputs.tag }}
+      last_tag: ${{ steps.get-last-tag.outputs.tag }}
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
@@ -45,6 +47,100 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install setuptools setuptools-scm
+
+      - name: "Get last tag"
+        id: get-last-tag
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "none")
+          echo "tag=${LAST_TAG}" >> $GITHUB_OUTPUT
+          echo "Last tag: ${LAST_TAG}"
+
+      - name: "Get current tag"
+        id: get-current-tag
+        run: |
+          if git describe --exact-match --tags HEAD 2>/dev/null; then
+            CURRENT_TAG=$(git describe --exact-match --tags HEAD)
+            echo "tag=${CURRENT_TAG}" >> $GITHUB_OUTPUT
+            echo "Current commit is tagged: ${CURRENT_TAG}"
+          else
+            echo "tag=none" >> $GITHUB_OUTPUT
+            echo "Current commit is not tagged"
+          fi
+
+      - name: "Check for conventional commits since last tag"
+        if: steps.get-current-tag.outputs.tag == 'none' && github.ref == 'refs/heads/main'
+        run: |
+          echo "::group::Commit Messages Since Last Tag"
+          if [ "${{ steps.get-last-tag.outputs.tag }}" != "none" ]; then
+            # Analyze commits since last tag
+            git log ${{ steps.get-last-tag.outputs.tag }}..HEAD --pretty=format:"%h %s" | tee /tmp/commits.txt
+
+            # Check for conventional commit types
+            FEAT_COUNT=$(grep -c "^[a-f0-9]\+ feat" /tmp/commits.txt || echo 0)
+            FIX_COUNT=$(grep -c "^[a-f0-9]\+ fix" /tmp/commits.txt || echo 0)
+            BREAKING_COUNT=$(grep -c "^[a-f0-9]\+ \(feat\|fix\).*!:" /tmp/commits.txt || echo 0)
+            BREAKING_FOOTER_COUNT=$(grep -c "BREAKING CHANGE:" /tmp/commits.txt || echo 0)
+
+            echo "Feature commits: $FEAT_COUNT"
+            echo "Fix commits: $FIX_COUNT"
+            echo "Breaking change commits: $BREAKING_COUNT"
+            echo "Breaking change footers: $BREAKING_FOOTER_COUNT"
+
+            # Get total commit count
+            TOTAL_COMMITS=$(wc -l < /tmp/commits.txt | tr -d ' ')
+            echo "Total commits since last tag: $TOTAL_COMMITS"
+
+            # Check if we have conventional commits
+            if [ "$TOTAL_COMMITS" -gt 0 ]; then
+              echo "has_changes=true" >> $GITHUB_ENV
+
+              # Determine what kind of version bump we need
+              if [ "$BREAKING_COUNT" -gt 0 ] || [ "$BREAKING_FOOTER_COUNT" -gt 0 ]; then
+                echo "bump_type=major" >> $GITHUB_ENV
+              elif [ "$FEAT_COUNT" -gt 0 ]; then
+                echo "bump_type=minor" >> $GITHUB_ENV
+              elif [ "$FIX_COUNT" -gt 0 ]; then
+                echo "bump_type=patch" >> $GITHUB_ENV
+              else
+                echo "bump_type=patch" >> $GITHUB_ENV
+              fi
+            else
+              echo "has_changes=false" >> $GITHUB_ENV
+            fi
+          else
+            echo "No previous tag found. Will create initial version."
+            echo "has_changes=true" >> $GITHUB_ENV
+            echo "bump_type=first" >> $GITHUB_ENV
+          fi
+          echo "::endgroup::"
+
+      - name: "Get detailed setuptools-scm info"
+        run: |
+          echo "::group::Setuptools-SCM Version Details"
+          python - <<EOF
+          from setuptools_scm import get_version
+          import json
+
+          # Get the simple version string
+          version = get_version()
+          print(f"Version: {version}")
+
+          # Try to access detailed info (note: _get_version is internal and might change)
+          try:
+              from setuptools_scm import _get_version
+              version_data = _get_version()
+              print(f"Tag: {version_data.get('tag', 'No tag')}")
+              print(f"Distance: {version_data.get('distance', 'N/A')}")
+              print(f"Dirty: {version_data.get('dirty', False)}")
+              print(f"Node: {version_data.get('node', 'N/A')}")
+
+              # Print the raw data
+              print("\nRaw version data:")
+              print(json.dumps(version_data, indent=2))
+          except (ImportError, AttributeError):
+              print("Could not access detailed version info")
+          EOF
+          echo "::endgroup::"
 
       - name: "Get version from setuptools-scm"
         id: get-version
@@ -63,10 +159,16 @@ jobs:
         run: |
           if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
             echo "is_release=true" >> $GITHUB_OUTPUT
+            echo "should_tag=false" >> $GITHUB_OUTPUT
           elif [ -n "${{ github.event.inputs.tag }}" ]; then
             echo "is_release=true" >> $GITHUB_OUTPUT
+            echo "should_tag=true" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == refs/heads/main && "${{ env.has_changes }}" == "true" ]]; then
+            echo "is_release=true" >> $GITHUB_OUTPUT
+            echo "should_tag=true" >> $GITHUB_OUTPUT
           else
             echo "is_release=false" >> $GITHUB_OUTPUT
+            echo "should_tag=false" >> $GITHUB_OUTPUT
           fi
 
       - name: "Display determined version"
@@ -75,6 +177,14 @@ jobs:
           echo "::group::Version Details"
           echo "Version: ${{ steps.get-version.outputs.version }}"
           echo "Is Release: ${{ steps.check-tag.outputs.is_release }}"
+          echo "Should Tag: ${{ steps.check-tag.outputs.should_tag }}"
+          echo "Current Tag: ${{ steps.get-current-tag.outputs.tag }}"
+          echo "Last Tag: ${{ steps.get-last-tag.outputs.tag }}"
+          if [[ "${{ env.has_changes }}" == "true" ]]; then
+            echo "Changes Detected: Yes - Bump Type: ${{ env.bump_type }}"
+          else
+            echo "Changes Detected: No"
+          fi
           echo "Ref: ${{ github.ref }}"
           echo "Event: ${{ github.event_name }}"
           echo "::endgroup::"
@@ -83,7 +193,7 @@ jobs:
     name: "Tag release"
     runs-on: ubuntu-latest
     needs: determine-version
-    if: ${{ github.ref == 'refs/heads/main' && github.event.inputs.tag != '' }}
+    if: ${{ needs.determine-version.outputs.should_tag == 'true' }}
     permissions:
       contents: write
     steps:
@@ -98,48 +208,3 @@ jobs:
           git config user.email "${{ github.actor }}@users.noreply.github.com"
           git tag -a "v${{ needs.determine-version.outputs.version }}" -m "Release v${{ needs.determine-version.outputs.version }}"
           git push origin "v${{ needs.determine-version.outputs.version }}"
-
-  build-and-publish:
-    name: "Build and publish"
-    runs-on: ubuntu-latest
-    needs: [determine-version, tag-release]
-    if: ${{ needs.determine-version.outputs.is_release == 'true' || github.event_name == 'workflow_dispatch' }}
-    permissions:
-      contents: read
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: "Set up Python"
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: "Display version being built"
-        run: |
-          echo "::notice title=Building::Building version ${{ needs.determine-version.outputs.version }}"
-
-      - name: "Install build dependencies"
-        run: |
-          python -m pip install --upgrade pip
-          pip install build twine
-
-      - name: "Build package"
-        run: |
-          python -m build
-
-      - name: "Store the distribution packages"
-        uses: actions/upload-artifact@v4
-        with:
-          name: python-package-distributions
-          path: dist/
-          retention-days: 7
-
-      # Uncomment when ready to publish to PyPI
-      # - name: "Publish to PyPI"
-      #   if: ${{ needs.determine-version.outputs.is_release == 'true' }}
-      #   uses: pypa/gh-action-pypi-publish@release/v1
-      #   with:
-      #     password: ${{ secrets.PYPI_API_TOKEN }}

@@ -50,6 +50,7 @@ all = [
 ]
 
 [tool.setuptools_scm]
+version_scheme = "release-branch-semver"
 
 [tool.ruff]
 line-length = 120

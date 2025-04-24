@@ -30,7 +30,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        uv sync --group lint
+        uv sync --group lint docs
 
     - name: Pre-commit checks
       uses: pre-commit/action@v3.0.1

@@ -7,60 +7,45 @@ base-dir := $(shell basename $(cur-dir))
 help: ## Display this help screen
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-generate-requirements-txt: ## Generate a requirements.txt from pyproject.toml. Specify deps=<opt-deps> for specific optional dependencies. Specify output-file=<file.txt> from specific output file.
-	@if [ -z $(deps) ]; then \
-		pip-compile \
-			--output-file=requirements/requirements.txt \
-			--verbose \
-			pyproject.toml; \
-	else \
-		pip-compile \
-			--extra=$(deps) \
-			--output-file=requirements/requirements-$(deps).txt \
-			--verbose \
-			pyproject.toml; \
-		sed -i '/xrcs\[[^]]*\] @ file/,+1d' requirements/requirements-$(deps).txt; \
-	fi
+generate-lock-file: ## Generate a uv.lock file from pyproject.toml
+	@uv lock
 
-setup-venv: ## Set up local environment for Python development on pipelines
-	@python -m venv .venv && \
-	. .venv/bin/activate && \
-	pip install --upgrade pip setuptools setuptools-scm && \
-	pip install -r requirements/requirements-all.txt
+sync-venv: ## Sync local environment for Python development on pipelines
+	@uv sync --all-groups
 
 pre-commit-install: ## Install pre-commit hooks
-	@. .venv/bin/activate && \
-	pre-commit install --install-hooks
+	@uv run pre-commit install --install-hooks
 
 pre-commit: ## Runs the pre-commit checks over entire repo
-	@. .venv/bin/activate && \
-	pre-commit run --all-files --color=always
+	@uv run pre-commit run --all-files --color=always
 
 ruff: ## Runs ruff linting and formatting
-	@. .venv/bin/activate && \
-	ruff check --fix && \
-	ruff format
+	@if [ -n "$(path)" ]; then \
+		uv run ruff check --fix $(path) && \
+		uv run ruff format $(path); \
+	else \
+		uv run ruff check --fix && \
+		uv run ruff format; \
+	fi
 
-run: ## Run application.
-	@. .venv/bin/activate && \
-	python -m src.main
+run: ## Run application
+	@uv run -m src.main
 
-run-debug: ## Run application with debug mode enabled.
-	@. .venv/bin/activate && \
-	python -m src.main -d
+run-debug: ## Run application with debug mode enabled
+	@uv run -m src.main -d
 
 run-tests: ## Run tests
-	@. .venv/bin/activate && \
-	pytest -n auto tests
+	@if [ -n "$(path)" ]; then \
+		uv run coverage run -m pytest $(path); \
+	else \
+		uv run coverage run -m pytest; \
+	fi
 
-run-tests-cov: ## Run tests with coverage reporting
-	@. .venv/bin/activate && \
-	pytest -n auto --cov=src tests
+run-tests-cov: ## Run tests with coverage
+	@uv run pytest -n auto --cov=src tests
 
 serve-local-docs: ## Serve documentation locally
-	@. .venv/bin/activate && \
-	mkdocs serve
+	@uv run mkdocs serve
 
 build-docs: ## Build documentation
-	@. .venv/bin/activate && \
-	mkdocs build
+	@uv run mkdocs build

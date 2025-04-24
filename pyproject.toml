@@ -1,7 +1,3 @@
-[build-system]
-requires = ["setuptools>=64", "setuptools-scm>=8"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "xrcs"
 dynamic = ["version"]
@@ -10,13 +6,6 @@ authors = [
     {name="Name", email="example@email.com"}
 ]
 readme = "README.md"
-classifiers = [
-    "Topic :: Software Development :: Machine Learning Tools",
-    "Development Status :: 3 - Alpha",
-    "Intended Audience :: Developers",
-    "Natural Language :: English",
-    "Programming Language :: Python :: 3.11",
-]
 requires-python = ">=3.11"
 
 dependencies = [
@@ -26,31 +15,49 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = [
-    "ruff==0.9.4",
-    "mypy==1.14.1",
-    "pre-commit==4.1.0",
-    "pytest~=7.0",
-    "pytest-xdist~=3.0",
-    "pytest-cov~=4.0",
-    "pytest-mock~=3.0",
-    "pylint~=3.0",
-    "pylint-pydantic",
-    "mkdocs~=1.0",
-    "mkdocstrings[python]>=0.20.0",
-    "mkdocs-material~=9.0",
-    "mkdocs-include-markdown-plugin~=6.0",
-    "jinja2>3.1.5",
-]
 packaging = [
     "buildozer",
 ]
-all = [
-    "xrcs[dev]",
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+    "pytest-cov>=6.1.1",
+    "pytest-mock>=3.14.0",
+    "pytest-xdist>=3.6.1",
+]
+docs = [
+    "jinja2>=3.1.6",
+    "mkdocs>=1.6.1",
+    "mkdocs-include-markdown-plugin>=7.1.5",
+    "mkdocs-material>=9.6.12",
+    "mkdocstrings[python]>=0.29.1",
+]
+lint = [
+    "mypy>=1.15.0",
+    "pre-commit>=4.2.0",
+    "pylint>=3.3.6",
+    "pylint-pydantic>=0.3.5",
+    "ruff>=0.11.6",
 ]
 
-[tool.setuptools_scm]
-version_scheme = "release-branch-semver"
+[build-system]
+requires = ["hatchling", "uv-dynamic-versioning>=0.7.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
+
+[tool.hatch.build]
+packages = ["src/mmm"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.uv-dynamic-versioning]
+vcs = "git"
+style = "pep440"
+bump = true
 
 [tool.ruff]
 line-length = 120
@@ -80,23 +87,21 @@ convention = "google"
 quote-style = "single"
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = "test_*.py"
-python_classes = "Test*"
-python_functions = "test_*"
+testpaths = "tests"
+filterwarnings = [
+    "ignore:.*:DeprecationWarning",
+    "ignore:.*:UserWarning",
+    "ignore:.*:FutureWarning",
+]
 
 [tool.coverage.run]
 source = ["src"]
-omit = ["tests/*", "**/__init__.py"]
 
 [tool.coverage.report]
-exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "raise NotImplementedError",
-    "if __name__ == .__main__.:",
-    "pass",
-    "raise ImportError",
+omit = [
+    "__init__.py",
+    "__main__.py",
+    "src/mmm/version.py",
+    "src/mmm/main.py",
 ]
-fail_under = 80
-show_missing = true
+fail_under = 90
